@@ -18,6 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Controller
@@ -29,6 +30,7 @@ public class RoomController {
     public String allRooms(WebRequest request, Model model) {
         model.addAttribute("newRoom", new RoomDto());
         model.addAttribute("rooms",  roomService.getRooms());
+        model.addAttribute("errors", new HashMap<String, String>());
 
         return "rooms";
     }
@@ -38,21 +40,29 @@ public class RoomController {
         RoomDto room;
         try {
             room = roomService.getRoomById(roomId);
-        } catch (RoomNotExistException e) {
+        } catch (RoomNotExistException | IllegalArgumentException e) {
+            model.addAttribute("message", "Room with id '" + roomId + "' doesn't exist");
             return "error";
         }
 
-        model.addAttribute("room", room);
+        model.addAttribute("newRoom", room);
         return "room";
     }
 
     @PostMapping("/room")
-    public String createRoom(@ModelAttribute("room") @Valid RoomDto roomDto, BindingResult bindingResult, Model model) {
+    public String createRoom(@ModelAttribute("newRoom") @Valid RoomDto roomDto, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()){
+            model.addAttribute("rooms",  roomService.getRooms());
+            return "rooms";
+        }
+
         try {
             roomService.createRoom(roomDto);
         } catch (RoomAlreadyExistException e) {
+            model.addAttribute("message", "Room with name " + roomDto.getName() + " already exist");
             return "error";
         }
+
         return "room";
     }
 

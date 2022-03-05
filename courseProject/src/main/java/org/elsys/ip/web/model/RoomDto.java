@@ -2,6 +2,8 @@ package org.elsys.ip.web.model;
 
 import org.elsys.ip.web.model.validator.PasswordMatches;
 import org.elsys.ip.web.model.validator.ValidEmail;
+import org.elsys.ip.web.model.validator.ValidRoomNameFiveSymbols;
+import org.elsys.ip.web.model.validator.ValidRoomWithNameAlreadyExists;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -12,6 +14,8 @@ public class RoomDto {
 
     @NotNull
     @NotEmpty
+    @ValidRoomNameFiveSymbols
+    @ValidRoomWithNameAlreadyExists
     private String name;
 
     public String getId() {
