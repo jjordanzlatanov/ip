@@ -1,9 +1,7 @@
 package org.elsys.ip.web;
 
 import org.elsys.ip.selenium.SeleniumConfig;
-import org.elsys.ip.web.pageobjects.HomePage;
-import org.elsys.ip.web.pageobjects.LoginPage;
-import org.elsys.ip.web.pageobjects.RegistrationPage;
+import org.elsys.ip.web.pageobjects.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -77,5 +75,52 @@ public class RegistrationTest {
         assertThat(registrationPage.getEmailNameErrors()).containsExactly("Invalid email");
         assertThat(registrationPage.getPasswordErrors()).hasSize(0);
         assertThat(registrationPage.getGlobalErrors()).hasSize(0);
+    }
+
+    @Test
+    public void registrationExistingEmail() throws InterruptedException {
+        driver.get(baseAddress);
+        HomePage homePage = PageFactory.initElements(driver, HomePage.class);
+
+        RegistrationPage registrationPage = homePage.register();
+        homePage = registrationPage.register("First Name", "Last Name", "email@email.com", "password");
+        registrationPage = homePage.register();
+        registrationPage.register("First Name", "Last Name", "email@email.com", "password");
+        assertThat(registrationPage.getEmailNameErrors()).containsExactly("An account for that username/email already exists.");
+    }
+
+    @Test
+    public void badLogin() {
+        driver.get(baseAddress);
+        HomePage homePage = PageFactory.initElements(driver, HomePage.class);
+
+        LoginPage loginPage = homePage.login();
+        loginPage.login("email@email.com", "password");
+        assertThat(loginPage.getBadCredentialsErrors()).containsExactly("Bad credentials");
+    }
+
+    @Test
+    public void createRoom() throws InterruptedException{ 
+        driver.get(baseAddress);
+        HomePage homePage = PageFactory.initElements(driver, HomePage.class);
+
+        RegistrationPage registrationPage = homePage.register();
+        homePage = registrationPage.register("First Name", "Last Name", "email@email.com", "password");
+        LoginPage loginPage = homePage.login();
+        homePage = loginPage.login("email@email.com", "password");
+        RoomsPage roomsPage = homePage.rooms();
+        RoomPage roomPage = roomsPage.registerRoom("newroom");
+        assertThat(roomPage.isExistant()).isTrue();
+
+        roomsPage = roomPage.rooms();
+        roomsPage.registerRoomWithErrors("1234");
+        assertThat(roomsPage.getCreateRoomErrors()).containsExactly("The name should be more than 4 letters long.");
+
+        roomsPage.registerRoomWithErrors("newroom");
+        assertThat(roomsPage.getCreateRoomErrors()).containsExactly("A room with that name already exists.");
+
+        driver.get(baseAddress + "room?id=unknownid");
+        String error = driver.findElements(By.cssSelector("p")).get(0).getText();
+        assertThat(error).isEqualTo("There is no room with id unknownid");
     }
 }

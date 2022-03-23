@@ -1,5 +1,6 @@
 package org.elsys.ip.web.pageobjects;
 
+import org.h2.mvstore.Page;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -16,6 +17,9 @@ public class HomePage extends AbstractPage {
 
     @FindBy(how = How.ID, using = "logoutButton")
     private WebElement logoutButton;
+
+    @FindBy(how = How.ID, using = "roomsButton")
+    private WebElement roomsButton;
 
     public HomePage(WebDriver driver) {
         super(driver);
@@ -38,5 +42,10 @@ public class HomePage extends AbstractPage {
 
     public void logout() {
         logoutButton.click();
+    }
+
+    public RoomsPage rooms(){
+        roomsButton.click();
+        return PageFactory.initElements(driver, RoomsPage.class);
     }
 }

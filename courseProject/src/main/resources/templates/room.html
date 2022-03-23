@@ -13,12 +13,12 @@
 <form th:if="!${room.isCurrentUserJoined}" action="/room" method="POST" enctype="utf8">
     <input type="hidden" value="true" name="join"/>
     <input type="hidden" th:value="${room.id}" name="id"/>
-    <button type="submit" th:text="#{label.room.join}">join</button>
+    <button class="button-jn" type="submit" th:text="#{label.room.join}">join</button>
 </form>
 <form th:if="${room.isCurrentUserJoined}" action="/room" method="POST" enctype="utf8">
     <input type="hidden" value="false" name="join"/>
     <input type="hidden" th:value="${room.id}" name="id"/>
-    <button type="submit" th:text="#{label.room.leave}">leave</button>
+    <button class="button-lv" type="submit" th:text="#{label.room.leave}">leave</button>
 </form>
 
 </body>

@@ -19,7 +19,7 @@ public class SeleniumConfig {
     }
 
     static {
-        System.setProperty("webdriver.gecko.driver", findFile("geckodriver"));
+        System.setProperty("webdriver.gecko.driver", findFile("geckodriver.exe"));
     }
 
     static private String findFile(String filename) {
